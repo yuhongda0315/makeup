@@ -1,0 +1,23 @@
+{
+  "name": "message-generator",
+  "version": "1.0.0",
+  "description": "generator rongcloud message",
+  "main": "generator.js",
+  "bin": {
+    "msg-generator": "./generator.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "generator"
+  ],
+  "author": "yuhongda0315@163.com",
+  "license": "MIT",
+  "devDependencies": {
+    "commander": "^2.15.1"
+  },
+  "dependencies": {
+    "commander": "^2.15.1"
+  }
+}
