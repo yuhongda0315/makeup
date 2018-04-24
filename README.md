@@ -23,3 +23,12 @@ npm install
     -h, --help             output usage information
 ```
 
+
+3、示例
+
+生成 `example` 目录下 `chatroom.json` 中对应的消息类
+
+```
+node generator -i ./example -o ./example
+
+```

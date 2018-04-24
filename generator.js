@@ -144,7 +144,7 @@ utils.each(Opt.jsons, (messages) => {
 });
 
 let getOutput = (file) => {
-	let tpl = '{{this.path}}{{this.name}}.{{this.ext}}';
+	let tpl = '{{this.path}}/{{this.name}}.{{this.ext}}';
 	return utils.render(file, tpl);
 };
 

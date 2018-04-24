@@ -1,0 +1,26 @@
+{
+    "DanMuMessage": {
+        "name": "RC:DanMu",
+        "flag": 2,
+        "proto":{
+            "content": "hellowrold",
+            "time": 9283048,
+            "price": 12.89,
+            "isFinished": true
+        },
+        "verify": {
+            "content": {
+                "type": "string"
+            },
+            "time": {
+                "type": "int"
+            },
+            "price": {
+                "type": "double"
+            },
+            "isFinished": {
+                "type": "boolean"
+            }
+        }
+    }
+}
