@@ -122,6 +122,7 @@ if (!language) {
 	console.log('%s language is not support, has supported java', Opt.lanType);
 	return;
 }
+
 let tpl = language.tpl;
 let ext = language.ext;
 let Types = language.Types;
