@@ -3,107 +3,113 @@ let tpl = `
 package io.rong.message;
 
 import android.os.Parcel;
-import android.text.TextUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import io.rong.common.RLog;
-import io.rong.imlib.MessageTag;
-import io.rong.imlib.model.MentionedInfo;
-import io.rong.imlib.model.MessageContent;
-import io.rong.imlib.model.UserInfo;
 import io.rong.common.ParcelUtils;
+import io.rong.imlib.MessageTag;
+import io.rong.imlib.model.MessageContent;
 
 @MessageTag(value = "{{this.name}}", flag = {{this.flag}})
 public class {{this.messageType}} extends MessageContent {
-    private final static String TAG = "{{this.messageType}}";
-
-    protected {{this.messageType}}() {
-
+  public {{this.messageType}}() {
+  }
+  public {{this.messageType}}(byte[] data) {
+    String jsonStr = null;
+    try {
+        jsonStr = new String(data, "UTF-8");
+    } catch (UnsupportedEncodingException e) {
+        e.printStackTrace();
     }
-
-    public {{this.messageType}}({{ var count = 0; for(var key in this.proto){ count++; }} {{this.verify[key].type }} {{key}} {{ if( count < this.count){}},{{ } }} {{ } }}) {
+    try {
+        JSONObject jsonObj = new JSONObject(jsonStr);
         {{ for(var key in this.proto){ }}
-
-          this.set{{this.upperLetter(key)}}({{key}});
-
+          if (jsonObj.has("{{key}}")){
+            {{key}} = jsonObj.opt{{this.upperLetter(this.verify[key].type.val)}}("{{key}}");
+          }
         {{ } }}
+    } catch (JSONException e) {
+        e.printStackTrace();
     }
-
-    {{ for(var key in this.proto){  }}
-      private {{this.verify[key].type}} {{key}};
-
-      public void set{{this.upperLetter(key)}}({{this.verify[key].type}} {{key}}) {
-          this.{{key}} = {{key}};
-      }
-
-      public {{this.verify[key].type}} get{{this.upperLetter(key)}}() {
-          return {{key}};
-      }
+  }
+  @Override
+  public byte[] encode() {
+    JSONObject jsonObj = new JSONObject();
+    try {
+        {{ for(var key in this.proto){ }}
+            jsonObj.put("{{key}}", {{key}});
+        {{ } }}
+    } catch (JSONException e) {
+        e.printStackTrace();
+    }
+    try {
+        return jsonObj.toString().getBytes("UTF-8");
+    } catch (UnsupportedEncodingException e) {
+        e.printStackTrace();
+    }
+    return null;
+  }
+  @Override
+  public int describeContents() {
+    return 0;
+  }
+  @Override
+  public void writeToParcel(Parcel dest, int flags) {
+    {{ for(var key in this.proto){ }}
+      ParcelUtils.writeToParcel(dest, {{key}});
     {{ } }}
-    
+  }
+  protected DanMuMessage(Parcel in) {
+    {{ for(var key in this.proto){ }}
+      {{key}} = ParcelUtils.read{{this.upperLetter(this.verify[key].type.val)}}FromParcel(in);
+    {{ } }}
+  }
+  public static final Creator<{{this.messageType}}> CREATOR = new Creator<{{this.messageType}}>() {
     @Override
-    public byte[] encode() {
-
-        JSONObject jsonObj = new JSONObject();
-        try {
-            {{ for(var key in this.proto){ }}
-              jsonObj.put("{{key}}", get{{this.upperLetter(key)}}());
-            {{ } }}
-        } catch (JSONException e) {
-            RLog.e(TAG, "JSONException " + e.getMessage());
-        }
-
-        try {
-            return jsonObj.toString().getBytes("UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        return null;
+    public {{this.messageType}} createFromParcel(Parcel source) {
+        return new {{this.messageType}}(source);
     }
-
-    public int describeContents() {
-        return 0;
-    }
-
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
-      {{ for(var key in this.proto){ }}
-        ParcelUtils.writeToParcel(dest, get{{this.upperLetter(key)}}());
-      {{ } }}  
+    public {{this.messageType}}[] newArray(int size) {
+        return new {{this.messageType}}[size];
     }
-
-    public {{this.messageType}}(Parcel in) {
-      {{ for(var key in this.proto){ }}
-        set{{this.upperLetter(key)}}(ParcelUtils.readFromParcel(in));
-      {{ } }}  
+  };
+  {{ for(var key in this.proto){ }}
+    private {{var stiff = this.verify[key].type.stiff; var val = this.verify[key].type.val;if(stiff){}}{{val}}{{ } }}{{if(!stiff){ }}{{this.upperLetter(val)}}{{ } }} {{key}};
+    public void set{{this.upperLetter(key)}}({{var stiff = this.verify[key].type.stiff; var val = this.verify[key].type.val;  if(stiff){ }} {{val}} {{ } }}  {{ if(!stiff){ }} {{ this.upperLetter(val) }} {{ } }} {{key}}) {
+        {{key}} = {{key}};
     }
-
-    public static final Creator<{{this.messageType}}> CREATOR = new Creator<{{this.messageType}}>() {
-
-        @Override
-        public {{this.messageType}} createFromParcel(Parcel source) {
-            return new {{this.messageType}}(source);
-        }
-
-        @Override
-        public {{this.messageType}}[] newArray(int size) {
-            return new {{this.messageType}}[size];
-        }
-    };
-
+    public {{var stiff = this.verify[key].type.stiff; var val = this.verify[key].type.val;if(stiff){ }} {{val}}{{ } }}{{if(!stiff){ }}{{this.upperLetter(val)}}{{ } }} get{{this.upperLetter(key)}}() {
+      return {{key}};
+    }
+  {{ } }}
 }
 `;
+
+let Types = {
+  string: {
+    val: 'String'
+  },
+  double: {
+    val: 'double',
+    stiff: true
+  },
+  int: {
+    val: 'int',
+    stiff: true
+  },
+  boolean: {
+    val: 'boolean',
+    stiff: true
+  }
+};
 
 let ext = 'java';
 module.exports = {
 	tpl: tpl,
-	ext: ext
+	ext: ext,
+  Types: Types
 };

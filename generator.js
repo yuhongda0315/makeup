@@ -13,11 +13,11 @@ let utils = {
 		data = data || [""];
 		var re = /{{((?:(?!}}).)+)}}/g,
 			reExp = /(^( )?(var|if|for|else|switch|case|break|{|}))(.*)?/g,
-			code = 'var r=[];\n',
+			code = 'var r=[];',
 			cursor = 0;
 		var add = function(line, js) {
-			js ? (code += line.match(reExp) ? line + '\n' : 'r.push(' + line + ');\n') :
-				(code += line != '' ? 'r.push("' + line.replace(/"/g, '\\"') + '");\n' : '');
+			js ? (code += line.match(reExp) ? line : 'r.push(' + line + ');') :
+				(code += line != '' ? 'r.push("' + line.replace(/"/g, '\\"') + '");' : '');
 			return add;
 		}
 		var match;
@@ -31,7 +31,7 @@ let utils = {
 		data = isNaN(data.length) ? [data] : data;
 		var html = "";
 		for (var i = 0, length = data.length; i < length; i++) {
-			html += new Function(code.replace(/[\r\t\n]/g, '	')).apply(data[i]);
+			html += new Function(code.replace(/[\r\n]/g, '	')).apply(data[i]);
 		}
 		return html.replace(/	/g, '\n');
 	},
@@ -117,6 +117,15 @@ if (lanType) {
 	Opt.lanType = lanType;
 }
 
+let language = tplFactory[Opt.lanType];
+if (!language) {
+	console.log('%s language is not support, has supported java', Opt.lanType);
+	return;
+}
+let tpl = language.tpl;
+let ext = language.ext;
+let Types = language.Types;
+
 utils.each(Opt.jsons, (messages) => {
 	utils.forEach(messages, (message, type) => {
 		message.messageType = type;
@@ -127,19 +136,12 @@ utils.each(Opt.jsons, (messages) => {
 			letters[0] = letter.toUpperCase();
 			return letters.join('')
 		};
+		utils.forEach(message.verify, (proto) => {
+			let type = proto.type;
+			proto.type = Types[type];
+		});
 	});
 });
-
-
-
-let language = tplFactory[Opt.lanType];
-if (!language) {
-	console.log('%s language is not support, has supported java', Opt.lanType);
-	return;
-}
-
-let tpl = language.tpl;
-let ext = language.ext;
 
 let getOutput = (file) => {
 	let tpl = '{{this.path}}{{this.name}}.{{this.ext}}';
