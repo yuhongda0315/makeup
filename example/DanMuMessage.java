@@ -76,24 +76,46 @@ public class DanMuMessage extends MessageContent {
   @Override
   public void writeToParcel(Parcel dest, int flags) {
     
-      ParcelUtils.writeToParcel(dest, content);
+      
+         ParcelUtils.writeToParcel(dest, content);
+      
     
-      ParcelUtils.writeToParcel(dest, time);
+      
+         ParcelUtils.writeToParcel(dest, time);
+      
     
-      ParcelUtils.writeToParcel(dest, price);
+      
+         ParcelUtils.writeToParcel(dest, price);
+      
     
-      ParcelUtils.writeToParcel(dest, isFinished);
+      
+        ParcelUtils.writeToParcel(dest, isFinished ? 1 : 0);
+      
     
   }
   protected DanMuMessage(Parcel in) {
     
-      content = ParcelUtils.readStringFromParcel(in);
+      
+        content = ParcelUtils.readFromParcel(in);
+      
     
-      time = ParcelUtils.readIntFromParcel(in);
+      
+        
+          time = ParcelUtils.readIntFromParcel(in);
+        
+      
     
-      price = ParcelUtils.readDoubleFromParcel(in);
+      
+        
+          price = ParcelUtils.readDoubleFromParcel(in);
+        
+      
     
-      isFinished = ParcelUtils.readBooleanFromParcel(in);
+      
+        
+          isFinished = ParcelUtils.readIntFromParcel(in) != 0;
+        
+      
     
   }
   public static final Creator<DanMuMessage> CREATOR = new Creator<DanMuMessage>() {

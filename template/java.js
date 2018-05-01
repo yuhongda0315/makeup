@@ -59,12 +59,24 @@ public class {{this.messageType}} extends MessageContent {
   @Override
   public void writeToParcel(Parcel dest, int flags) {
     {{ for(var key in this.proto){ }}
-      ParcelUtils.writeToParcel(dest, {{key}});
+      {{ if(this.verify[key].type.val == 'boolean'){ }}
+        ParcelUtils.writeToParcel(dest, {{key}} ? 1 : 0);
+      {{ }else{ }}
+         ParcelUtils.writeToParcel(dest, {{key}});
+      {{ } }}
     {{ } }}
   }
   protected DanMuMessage(Parcel in) {
     {{ for(var key in this.proto){ }}
-      {{key}} = ParcelUtils.read{{this.upperLetter(this.verify[key].type.val)}}FromParcel(in);
+      {{ if(this.verify[key].type.val == 'string'){ }}
+        {{key}} = ParcelUtils.readFromParcel(in);
+      {{ }else{ }}
+        {{ if(this.verify[key].type.val == 'boolean'){ }}
+          {{key}} = ParcelUtils.readIntFromParcel(in) != 0;
+        {{ }else{ }}
+          {{key}} = ParcelUtils.read{{this.upperLetter(this.verify[key].type.val)}}FromParcel(in);
+        {{ } }}
+      {{ } }}
     {{ } }}
   }
   public static final Creator<{{this.messageType}}> CREATOR = new Creator<{{this.messageType}}>() {
@@ -91,7 +103,7 @@ public class {{this.messageType}} extends MessageContent {
 
 let Types = {
   string: {
-    val: 'String'
+    val: 'string'
   },
   double: {
     val: 'double',
