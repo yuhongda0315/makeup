@@ -1,8 +1,7 @@
 {
-  "name": "message-generator",
+  "name": "makeup",
   "version": "1.0.0",
-  "description": "generator rongcloud message",
-  "main": "generator.js",
+  "main": "index.js",
   "bin": {
     "makeup": "./cli.js"
   },
@@ -10,7 +9,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
-    "generator"
+    "makeup"
   ],
   "author": "yuhongda0315@163.com",
   "license": "MIT",
