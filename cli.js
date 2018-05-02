@@ -6,7 +6,7 @@ const program = require('commander');
 const makeup = require('./index');
 
 program
-  .version('1.0.0')
+  .version('1.0.3')
   .option('-i, --input [dir]', 'message input dir or file path')
   .option('-o, --output [dir]', 'message output dir, default ./')
   .option('-t, --template [type]', 'templates path, default java.js')

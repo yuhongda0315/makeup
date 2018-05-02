@@ -1,6 +1,6 @@
 {
   "name": "makeup_martin",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "main": "index.js",
   "bin": {
     "makeup": "./cli.js"

@@ -83,12 +83,12 @@ let config = {
 
 		if (stat.isFile()) {
 			let json, _url = url;
+			_url = path.resolve(process.cwd(), _url);
 			try {
 				json = require(url);
 			} catch (e) {
-				let tpl = '{{this.path}}{{this.url}}';
+				let tpl = '{{this.url}}';
 				let url = utils.render({
-					path: './',
 					url: _url
 				}, tpl);
 				json = require(url);
@@ -99,8 +99,8 @@ let config = {
 	output: (output) => {
 		Opt.output = output;
 	},
-	template: (template) => {
-		Ipt.tplPath = template;
+	template: (url) => {
+		Ipt.tplPath = path.resolve(process.cwd(), url);;
 	}
 };
 
