@@ -100,8 +100,33 @@ let config = {
 		Opt.output = output;
 	},
 	template: (url) => {
-		Ipt.tplPath = path.resolve(process.cwd(), url);;
+		Ipt.tplPath = path.resolve(process.cwd(), url);
+	},
+	docs: () => {
+
 	}
+};
+
+let getOutPath = (file) => {
+	let tpl = '{{this.path}}/{{this.prefix}}{{this.name}}.{{this.ext}}';
+	return utils.render(file, tpl);
+};
+
+
+let writeFile = (file) => {
+	let content = file.content;
+	let path = file.path;
+	fs.writeFileSync(path, content)
+};
+
+let renderTpl = (template, content) => {
+	let path = getOutPath(template);
+	let tpl = template.tpl;
+	content = utils.render(content, tpl);
+	return {
+		path: path,
+		content: content
+	};
 };
 
 let makeup = (_config) => {
@@ -112,7 +137,24 @@ let makeup = (_config) => {
 	const template = require(Ipt.tplPath);
 	let tpl = template.tpl;
 	let ext = template.ext;
-	let Types = template.Types;
+	let prefix = template.prefix || '';
+	let Types = template.Types || {};
+	let name = template.name || '';
+
+	let isBuildDocs = _config.docs;
+	if (isBuildDocs) {
+		let parts = name.split('.');
+		name = parts[0] || Date.now();
+		ext = parts[1] || 'md';
+		let file = renderTpl({
+			tpl: tpl,
+			path: Opt.output,
+			prefix: prefix,
+			name: name,
+			ext: ext
+		}, Opt.jsons);
+		return writeFile(file);
+	}
 
 	utils.each(Opt.jsons, (messages) => {
 		utils.forEach(messages, (message, type) => {
@@ -127,25 +169,21 @@ let makeup = (_config) => {
 			let verify = message.verify || {};
 			utils.forEach(verify, (proto) => {
 				let type = proto.type;
-				proto.type = Types[type];
+				proto.type = Types[type] || { val: type };
 			});
 		});
 	});
 
-	let getOutput = (file) => {
-		let tpl = '{{this.path}}/{{this.name}}.{{this.ext}}';
-		return utils.render(file, tpl);
-	};
-
 	utils.each(Opt.jsons, (messages) => {
 		utils.forEach(messages, (message, name) => {
-			let output = getOutput({
+			let file = renderTpl({
+				tpl: tpl,
 				path: Opt.output,
+				prefix: prefix,
 				name: name,
 				ext: ext
-			});
-			message = utils.render(message, tpl);
-			fs.writeFileSync(output, message)
+			}, message);
+			writeFile(file);
 		});
 	});
 };

@@ -3,7 +3,7 @@
 1、根目录执行：
 
 ```
-npm install -g makeup
+npm install -g makeup_martin
 ```
 
 
@@ -19,7 +19,8 @@ npm install -g makeup
     -V, --version          output the version number
     -i, --input [dir]      message input dir or file path
     -o, --output [dir]     message output dir, default ./
-    -l, --language [type]  templates path, default java.js
+    -t, --template [type]  templates path, default java.js
+    -d, --docs             generate the document from the input json
     -h, --help             output usage information
 ```
 
